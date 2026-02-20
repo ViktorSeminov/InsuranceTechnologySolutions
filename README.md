@@ -2,7 +2,7 @@
 Test code
 
 For a Task which described below we making a few assumptions.
-The word "Layer" present at task description we choose layered infrastructure for our app.
+Because word "Layer" present at task description, we choose layered infrastructure for our app.
 Adding only example of exceptions for our app, in real applications there should be more of them for Infra and App levels.
 Documentation also not full and shown only for example.
 Error handling not full.
