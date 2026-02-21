@@ -29,6 +29,9 @@ public class CoversController : ControllerBase
     /// <returns>An <see cref="ActionResult"/> containing the calculated premium amount. Returns an error response if the input
     /// dates are invalid.</returns>
     [HttpPost("compute")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(decimal))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Produces("application/json")]
     public ActionResult ComputePremiumAsync(DateTime startDate, DateTime endDate, CoverType coverType)
     {
         return Ok(PremiumCalculator.ComputePremium(startDate, endDate, coverType));
@@ -42,6 +45,8 @@ public class CoversController : ControllerBase
     /// <returns>An <see cref="ActionResult{T}"/> containing a collection of <see cref="Cover"/> objects. Returns an empty
     /// collection if no covers are found.</returns>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Cover>))]
+    [Produces("application/json")]
     public async Task<ActionResult<IEnumerable<Cover>>> GetAsync()
     {
         var results = await _coverService.GetAllCoversAsync();
@@ -56,6 +61,9 @@ public class CoversController : ControllerBase
     /// <param name="id">The unique identifier of the cover to retrieve. This parameter cannot be null or empty.</param>
     /// <returns>An ActionResult containing the cover details if found; otherwise, a not found response.</returns>
     [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Cover))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces("application/json")]
     public async Task<ActionResult<Cover>> GetAsync(string id)
     {
         var results = await _coverService.GetCoverByIdAsync(id);
@@ -74,6 +82,9 @@ public class CoversController : ControllerBase
     /// <param name="cover">The cover to create. This parameter must not be null.</param>
     /// <returns>An ActionResult that contains the created cover.</returns>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Cover))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Produces("application/json")]
     public async Task<ActionResult> CreateAsync(Cover cover)
     {
         await _coverService.CreateCoverAsync(cover);
@@ -87,6 +98,8 @@ public class CoversController : ControllerBase
     /// <returns>An <see cref="ActionResult{T}"/> containing <see langword="true"/> if the cover was successfully deleted;
     /// otherwise, <see langword="false"/>. Returns a NotFound result if the cover does not exist.</returns>
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<bool>> DeleteAsync(string id)
     {
         var deleted = await _coverService.DeleteCoverAsync(id);

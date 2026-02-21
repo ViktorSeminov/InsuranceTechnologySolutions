@@ -27,6 +27,8 @@ namespace Claims.Api.Controllers
         /// <returns>A task that represents the asynchronous operation. The task result contains an enumerable collection of <see
         /// cref="Claim"/> objects representing all claims.</returns>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Claim>))]
+        [Produces("application/json")]
         public async Task<IEnumerable<Claim>> GetAsync()
         {
             return await _claimsService.GetAllClaimsAsync();
@@ -40,6 +42,9 @@ namespace Claims.Api.Controllers
         /// <param name="id">The unique identifier of the claim to retrieve. This value cannot be null or empty.</param>
         /// <returns>An ActionResult containing the requested Claim if found; otherwise, a NotFound result.</returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Claim))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         public async Task<ActionResult<Claim>> GetByIdAsync(string id)
         {
             var claim = await _claimsService.GetClaimByIdAsync(id);
@@ -61,6 +66,10 @@ namespace Claims.Api.Controllers
         /// <param name="claim">The claim to create. Must not be null.</param>
         /// <returns>An ActionResult containing the created Claim object.</returns>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Claim))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         public async Task<ActionResult<Claim>> CreateAsync(Claim claim)
         {
             var result = await _claimsService.CreateClaimAsync(claim);
@@ -76,6 +85,8 @@ namespace Claims.Api.Controllers
         /// <returns>An ActionResult that indicates the outcome of the delete operation. Returns NoContent if the claim was
         /// successfully deleted; otherwise, returns NotFound if no claim with the specified identifier exists.</returns>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteAsync(string id)
         {
             var deleted = await _claimsService.DeleteClaimAsync(id);

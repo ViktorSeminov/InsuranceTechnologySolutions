@@ -2,6 +2,7 @@ using Claims.Application.Claims;
 using Claims.Domain.Claims;
 using Claims.Domain.Covers;
 using Claims.Infrastructure.Claims;
+using Claims.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
@@ -137,7 +138,7 @@ namespace Claims.Tests
         }
 
         [Fact]
-        public async Task CreateClaimAsync_ThrowsException_WhenCoverDoesNotExist()
+        public async Task CreateClaimAsync_ThrowsNotFoundException_WhenCoverDoesNotExist()
         {
             // Arrange
             var claim = new Claim
@@ -150,7 +151,7 @@ namespace Claims.Tests
             };
 
             // Act & Assert
-            var exception = await Assert.ThrowsAsync<Exception>(
+            var exception = await Assert.ThrowsAsync<NotFoundException>(
                 () => _claimService.CreateClaimAsync(claim));
 
             Assert.Contains("Cover with id non-existent-cover does not exist", exception.Message);

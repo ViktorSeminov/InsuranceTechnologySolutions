@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
+using Claims.Infrastructure.Exceptions;
 
 namespace Claims.Infrastructure.ExceptionHendlers
 {
@@ -30,19 +31,26 @@ namespace Claims.Infrastructure.ExceptionHendlers
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
+            var (statusCode, message) = GetStatusCodeAndMessage(exception);
+            context.Response.StatusCode = statusCode;
 
-            switch (exception)
-            {
-                case ArgumentException ae:
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    break;
-                default:
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    break;
-            }
-
-            var result = JsonSerializer.Serialize(new { Error = "Internal server error" });
+            var result = JsonSerializer.Serialize(new { error = message });
             return context.Response.WriteAsync(result);
+        }
+
+        private static (int StatusCode, string Message) GetStatusCodeAndMessage(Exception exception)
+        {
+            return exception switch
+            {
+                ArgumentException ae =>
+                    ((int)HttpStatusCode.BadRequest, ae.Message),
+                NotFoundException nfe =>
+                    ((int)HttpStatusCode.NotFound, nfe.Message),
+                InvalidOperationException =>
+                    ((int)HttpStatusCode.BadRequest, "The request contained invalid data."),
+                _ =>
+                    ((int)HttpStatusCode.InternalServerError, "An unexpected error occurred. Please try again later.")
+            };
         }
     }
 }

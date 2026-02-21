@@ -2,6 +2,7 @@
 using Claims.Domain.Events;
 using Claims.Domain.Validators;
 using Claims.Infrastructure.Claims;
+using Claims.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Claim = Claims.Domain.Claims.Claim;
 
@@ -53,14 +54,14 @@ namespace Claims.Application.Claims
         /// creation. The creation action is also audited.</remarks>
         /// <param name="claim">The claim to create. Must include a valid CoverId and meet all validation requirements.</param>
         /// <returns>The newly created Claim object, including its assigned identifier.</returns>
-        /// <exception cref="Exception">Thrown if the cover specified by the claim's CoverId does not exist.</exception>
+        /// <exception cref="NotFoundException">Thrown if the cover specified by the claim's CoverId does not exist.</exception>
         public async Task<Claim> CreateClaimAsync(Claim claim)
         {
             //Validate claim
             ClaimValidator.Validate(claim);
 
             var cover = _claimsContext.Covers.Where(cover => cover.Id == claim.CoverId)
-                .SingleOrDefault() ?? throw new Exception($"Cover with id {claim.CoverId} does not exist.");
+                .SingleOrDefault() ?? throw new NotFoundException($"Cover with id {claim.CoverId} does not exist.");
 
             ClaimValidator.ValidateAgainstCover(claim, cover);
 
