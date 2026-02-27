@@ -23,15 +23,13 @@ var mongoContainer = new MongoDbBuilder()
     .WithImage("mongo:latest")
     .Build();
 
-// Register containers as singletons so the host disposes them on shutdown
-builder.Services.AddSingleton(sqlContainer);
-builder.Services.AddSingleton(mongoContainer);
-
 // Start containers before configuring services that depend on them
 await sqlContainer.StartAsync();
 await mongoContainer.StartAsync();
 
-
+// Register containers as singletons so the host disposes them on shutdown
+builder.Services.AddSingleton(sqlContainer);
+builder.Services.AddSingleton(mongoContainer);
 
 // Add services to the container.
 builder.Services
